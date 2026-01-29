@@ -1,0 +1,114 @@
+# Application Configuration Example - DEFAULT PROFILE (H2/Development)
+# 
+# This is the default configuration used when no specific profile is activated.
+# It uses H2 embedded database for development/testing.
+#
+# Activate this profile with:
+# - SPRING_PROFILES_ACTIVE=
+# - Or just run without specifying a profile (default)
+#
+# For the actual configuration, copy this file to application.yml
+
+spring:
+  application:
+    name: archie-blueprint-to-boot
+
+  # Database Configuration - Default H2 for demo/development
+  datasource:
+    url: jdbc:h2:mem:archiedb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+
+  jpa:
+    hibernate:
+      ddl-auto: update  # Automatically create/update schema
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+
+  # H2 Console (disable in production)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # File Upload Configuration
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE:10MB}
+      max-request-size: ${MAX_REQUEST_SIZE:10MB}
+      enabled: true
+
+  # Spring AI Configuration (for Gemini API)
+  ai:
+    openai:
+      api-key: ${GEMINI_API_KEY:}
+      base-url: https://generativelanguage.googleapis.com/v1beta/openai
+      chat:
+        options:
+          model: ${GEMINI_MODEL:gemini-2.0-flash}
+          temperature: ${GEMINI_TEMPERATURE:0.3}
+          max-tokens: ${GEMINI_MAX_TOKENS:4096}
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:dGhpc2lzYXZlcnlsb25nc2VjcmV0a2V5Zm9yand0dG9rZW5zYW5kaXRzaG91bGRiZWF0bGVhc3QyNTZiaXRzbG9uZ2Zvcmhz}
+  access-token-expiration-ms: ${JWT_ACCESS_EXPIRATION:900000}
+  refresh-token-expiration-ms: ${JWT_REFRESH_EXPIRATION:604800000}
+
+# Google Gemini API Configuration (Direct REST API)
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:}
+  model: ${GEMINI_MODEL:gemini-2.0-flash}
+
+# Thymeleaf Configuration
+thymeleaf:
+  cache: false
+  prefix: classpath:/templates/
+  suffix: .html
+
+# Application Configuration
+archie:
+  upload:
+    directory: ${UPLOAD_DIRECTORY:${java.io.tmpdir}/archie-uploads}
+  generation:
+    base-package: ${BASE_PACKAGE:com.generated}
+    output-directory: ${OUTPUT_DIRECTORY:${java.io.tmpdir}/archie-projects}
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.archie: ${LOG_LEVEL_ARCHIE:DEBUG}
+    org.springframework.ai: ${LOG_LEVEL_SPRING_AI:DEBUG}
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# OpenAPI / Swagger Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true

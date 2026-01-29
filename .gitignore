@@ -1,0 +1,293 @@
+# .gitignore
+# Archie - Blueprint to Boot
+# Security-first .gitignore configuration
+
+# ==============================================================================
+# ENVIRONMENT & SECRETS (CRITICAL - NEVER COMMIT)
+# ==============================================================================
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.example.local
+!.env.example
+!.env.example.template
+
+# API Keys & Credentials
+*.key
+*.pem
+*.p8
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.keystorefile
+*.pkcs12
+archie-key.json
+google-credentials.json
+application_default_credentials.json
+*credentials*.json
+*-credentials.json
+*secret*.json
+*-secret*.json
+private-key.json
+service-account*.json
+
+# AWS Credentials
+.aws/credentials
+.aws/config
+aws_credentials.txt
+
+# ==============================================================================
+# MAVEN BUILD & CONFIGURATION
+# ==============================================================================
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+.m2/
+mvn-cache/
+
+# ==============================================================================
+# IDE - IntelliJ IDEA
+# ==============================================================================
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+*.iml.iml
+.DS_Store
+
+# ==============================================================================
+# IDE - Eclipse
+# ==============================================================================
+.classpath
+.project
+.settings/
+bin/
+.sts4-cache/
+.apt_generated/
+.apt_generated_tests/
+
+# ==============================================================================
+# IDE - VS Code
+# ==============================================================================
+.vscode/
+*.code-workspace
+.history/
+.ionide/
+
+# ==============================================================================
+# IDE - NetBeans
+# ==============================================================================
+nbproject/
+nb-configuration.xml
+*.nbattrs
+
+# ==============================================================================
+# IDE - Sublime Text
+# ==============================================================================
+*.sublime-workspace
+*.sublime-project
+
+# ==============================================================================
+# Operating System
+# ==============================================================================
+.DS_Store
+.DS_Store?
+._*
+.AppleDouble
+.LSOverride
+Thumbs.db
+.Thumbs.db
+desktop.ini
+ehthumbs.db
+.directory
+
+# ==============================================================================
+# LOGS & DEBUG
+# ==============================================================================
+logs/
+log/
+*.log
+*.log.*
+spring.log
+app.log
+debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# ==============================================================================
+# TEMPORARY & BACKUP FILES
+# ==============================================================================
+*.tmp
+*.temp
+*.bak
+*.bak.*
+*.cache
+*.swp
+*~
+*.swo
+*.swn
+*#
+.#*
+*.orig
+*.rej
+
+# ==============================================================================
+# APPLICATION SPECIFIC
+# ==============================================================================
+application-local.yml
+application-dev.yml
+application-test.yml
+application-prod.yml
+archie-uploads/
+archie-projects/
+uploads/
+downloads/
+temp/
+tmp/
+
+# ==============================================================================
+# DATABASE FILES
+# ==============================================================================
+*.db
+*.sqlite
+*.sqlite3
+*.h2.db
+*.mdb
+*.accdb
+data/
+*.rdb
+
+# ==============================================================================
+# BUILD ARTIFACTS & DISTRIBUTION
+# ==============================================================================
+dist/
+build/
+out/
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+*. zip
+*.7z
+
+# ==============================================================================
+# NODE & FRONTEND
+# ==============================================================================
+frontend/node_modules/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+yarn-error.log
+package-lock.json
+yarn.lock
+.pnpm-lock.yaml
+.npm
+dist/
+build/
+.next/
+out/
+.nuxt/
+dist/
+.cache/
+.vuepress/dist/
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+
+# ==============================================================================
+# JAVA SPECIFIC
+# ==============================================================================
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+.classpath
+.project
+.settings/
+.spring-metadata.json
+
+# ==============================================================================
+# TEST COVERAGE
+# ==============================================================================
+coverage/
+.nyc_output/
+*.coverage
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+.pytest_cache/
+.coverage.*
+
+# ==============================================================================
+# GENERATED FILES
+# ==============================================================================
+generated/
+.generated/
+src/main/generated/
+target/generated-sources/
+target/generated-test-sources/
+
+# ==============================================================================
+# SYSTEM & RUNTIME
+# ==============================================================================
+.gradle/
+.groovy/
+.ruby-version
+.ruby-gemset
+Gemfile.lock
+.bundle/
+.venv/
+venv/
+env/
+ENV/
+.python-version
+__pycache__/
+*.pyc
+*.pyo
+
+# ==============================================================================
+# DOCKER & CONTAINERS
+# ==============================================================================
+docker-compose.override.yml
+.dockerignore
+.docker/config.json
+
+# ==============================================================================
+# CI/CD
+# ==============================================================================
+.github/workflows/secrets*
+.gitlab-ci.local.yml
+.circleci/config.local.yml
+
+# ==============================================================================
+# MISC
+# ==============================================================================
+.env.vault
+*.pem
+.envrc
+.direnv/

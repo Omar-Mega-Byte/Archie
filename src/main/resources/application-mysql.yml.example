@@ -1,0 +1,177 @@
+# Application Configuration Example - MYSQL PROFILE
+# 
+# This profile configures the application to use MySQL database.
+# Suitable for production-like environments with MySQL backend.
+#
+# Prerequisites:
+# - MySQL 5.7+ or MySQL 8.0+ installed and running
+# - Database and user created
+#
+# Activate this profile with:
+# - export SPRING_PROFILES_ACTIVE=mysql
+# - Or: mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=mysql"
+# - Or add to .env: SPRING_PROFILES_ACTIVE=mysql
+#
+# For the actual configuration, copy this file to application-mysql.yml
+
+spring:
+  application:
+    name: archie-blueprint-to-boot
+
+  # MySQL Configuration
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:archiedb}?createDatabaseIfNotExist=true&useSSL=${MYSQL_USE_SSL:false}&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8mb4&collation=utf8mb4_unicode_ci
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:}
+    
+    # Connection Pool Configuration (HikariCP)
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
+      auto-commit: true
+      connection-test-query: SELECT 1
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Only validate schema, don't modify
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect  # Use MySQL8Dialect for MySQL 5.7+
+        format_sql: true
+        jdbc:
+          batch_size: 20
+          fetch_size: 50
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
+        # MySQL-specific optimizations
+        connection:
+          provider_disables_autocommit: true
+
+  # Disable H2 Console
+  h2:
+    console:
+      enabled: false
+
+  # File Upload Configuration
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE:50MB}
+      max-request-size: ${MAX_REQUEST_SIZE:50MB}
+      enabled: true
+
+  # Spring AI Configuration (for Gemini API)
+  ai:
+    openai:
+      api-key: ${GEMINI_API_KEY:}
+      base-url: https://generativelanguage.googleapis.com/v1beta/openai
+      chat:
+        options:
+          model: ${GEMINI_MODEL:gemini-2.0-flash}
+          temperature: ${GEMINI_TEMPERATURE:0.3}
+          max-tokens: ${GEMINI_MAX_TOKENS:4096}
+
+# JWT Configuration - Production-grade
+jwt:
+  secret: ${JWT_SECRET:}  # MUST be set via environment variable
+  access-token-expiration-ms: ${JWT_ACCESS_EXPIRATION:900000}     # 15 minutes
+  refresh-token-expiration-ms: ${JWT_REFRESH_EXPIRATION:604800000} # 7 days
+
+# Google Gemini API Configuration
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:}
+  model: ${GEMINI_MODEL:gemini-2.0-flash}
+
+# Thymeleaf Configuration
+thymeleaf:
+  cache: true             # Enable caching in production
+  prefix: classpath:/templates/
+  suffix: .html
+
+# Application Configuration
+archie:
+  upload:
+    directory: ${UPLOAD_DIRECTORY:/var/archie/uploads}
+  generation:
+    base-package: ${BASE_PACKAGE:com.generated}
+    output-directory: ${OUTPUT_DIRECTORY:/var/archie/projects}
+
+# Actuator Configuration - Restricted for production
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+  metrics:
+    export:
+      simple:
+        enabled: true
+
+# Logging Configuration - Production level
+logging:
+  level:
+    root: WARN
+    com.archie: INFO
+    org.springframework: INFO
+    org.springframework.security: WARN
+    org.hibernate: WARN
+    com.mysql: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: /var/log/archie/archie.log
+    max-size: 100MB
+    max-history: 30
+    total-size-cap: 10GB
+
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /
+    session:
+      timeout: 30m
+  compression:
+    enabled: true
+    min-response-size: 1024
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+  ssl:
+    enabled: false  # Configure via reverse proxy (Nginx, Apache)
+
+# OpenAPI / Swagger Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    enabled: false  # Disable Swagger UI in production
+
+# Additional Production Settings
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s

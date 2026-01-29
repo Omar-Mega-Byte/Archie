@@ -1,0 +1,239 @@
+# Application Configuration Example - PRODUCTION PROFILE
+# 
+# This profile is optimized for production deployment.
+# Uses PostgreSQL with comprehensive monitoring and security settings.
+#
+# Activate this profile with:
+# - export SPRING_PROFILES_ACTIVE=prod
+# - Or: mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=prod"
+# - Or configure in deployment environment
+#
+# For the actual configuration, copy this file to application-prod.yml
+
+spring:
+  application:
+    name: archie-blueprint-to-boot
+
+  # PostgreSQL Configuration - Production
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:archiedb}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:archie}
+    password: ${DB_PASSWORD:}
+    
+    # Optimized Connection Pool for Production
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+      idle-timeout: 600000
+      connection-timeout: 30000
+      max-lifetime: 1800000
+      auto-commit: false
+      connection-test-query: SELECT 1
+      data-source-properties:
+        preparedStatementCacheSize: 500
+        preparedStatementCacheSqlLimit: 2048
+
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Never modify schema in production
+    show-sql: false
+    open-in-view: false  # Lazy loading issues prevention
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false  # Don't format SQL for performance
+        jdbc:
+          batch_size: 50
+          fetch_size: 100
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
+        default_batch_fetch_size: 16
+        generate_statistics: false
+        use_new_id_generator_mappings: true
+
+  # Disable H2 Console
+  h2:
+    console:
+      enabled: false
+
+  # File Upload Configuration - Production
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true
+      file-size-threshold: 1MB
+
+  # Spring AI Configuration (for Gemini API)
+  ai:
+    openai:
+      api-key: ${GEMINI_API_KEY:}
+      base-url: https://generativelanguage.googleapis.com/v1beta/openai
+      chat:
+        options:
+          model: ${GEMINI_MODEL:gemini-2.0-flash}
+          temperature: ${GEMINI_TEMPERATURE:0.2}
+          max-tokens: ${GEMINI_MAX_TOKENS:4096}
+
+# JWT Configuration - Strict Production Security
+jwt:
+  secret: ${JWT_SECRET:}  # MUST be set via secure environment variable
+  access-token-expiration-ms: ${JWT_ACCESS_EXPIRATION:900000}     # 15 minutes
+  refresh-token-expiration-ms: ${JWT_REFRESH_EXPIRATION:604800000} # 7 days
+
+# Google Gemini API Configuration
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:}
+  model: ${GEMINI_MODEL:gemini-2.0-flash}
+
+# Thymeleaf Configuration
+thymeleaf:
+  cache: true
+  prefix: classpath:/templates/
+  suffix: .html
+  encoding: UTF-8
+  mode: HTML
+  check-template-location: true
+
+# Application Configuration - Production Paths
+archie:
+  upload:
+    directory: ${UPLOAD_DIRECTORY:/var/lib/archie/uploads}
+  generation:
+    base-package: ${BASE_PACKAGE:com.generated}
+    output-directory: ${OUTPUT_DIRECTORY:/var/lib/archie/projects}
+
+# Security Configuration
+security:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:}
+    allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+    allowed-headers: "*"
+    max-age: 3600
+    allow-credentials: true
+
+# Actuator Configuration - Production Monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+    jmx:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+      livenessState:
+        enabled: true
+      readinessState:
+        enabled: true
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+    diskspace:
+      enabled: true
+      threshold: 1GB
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+    export:
+      prometheus:
+        enabled: true
+  trace:
+    http:
+      enabled: true
+
+# Logging Configuration - Production Audit Trail
+logging:
+  level:
+    root: WARN
+    com.archie: INFO
+    org.springframework: WARN
+    org.springframework.security: WARN
+    org.springframework.security.web: INFO
+    org.hibernate: WARN
+  pattern:
+    console: "%d{ISO8601} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{ISO8601} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: /var/log/archie/archie.log
+    max-size: 500MB
+    max-history: 90
+    total-size-cap: 50GB
+  logback:
+    rollingpolicy:
+      max-file-size: 500MB
+      max-history: 90
+      total-size-cap: 50GB
+  config: classpath:logback-spring.xml
+
+# Server Configuration - Production Hardened
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /
+    session:
+      timeout: 30m
+      cookie:
+        secure: ${SECURE_COOKIES:true}
+        http-only: true
+        same-site: strict
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,text/javascript,application/javascript
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+    whitelabel:
+      enabled: false
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 10
+    max-connections: 10000
+    max-http-post-size: 104857600
+    accept-count: 100
+    accesslog:
+      enabled: true
+      directory: /var/log/archie
+      prefix: access
+      suffix: log
+      pattern: common
+  forward-headers-strategy: framework
+
+# OpenAPI / Swagger Configuration - Disabled in Production
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    enabled: false
+
+# Additional Production Settings
+spring:
+  profiles:
+    active: prod
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  main:
+    lazy-initialization: false
+  jmx:
+    enabled: true
+
+# Data Source Validation
+spring:
+  datasource:
+    hikari:
+      initialization-fail-timeout: 1000
